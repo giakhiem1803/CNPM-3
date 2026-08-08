@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+.env
+backend/.env
+.env.*
+!.env.example
+backend/uploads/*
+!backend/uploads/.gitkeep
+frontend/dist/
+coverage/
+*.log
+tmp/
