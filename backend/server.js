@@ -6,6 +6,9 @@ const port = Number(process.env.PORT || 5000);
 
 async function start() {
   try {
+    if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'replace_with_a_long_random_secret') {
+      throw new Error('JWT_SECRET chưa được cấu hình bằng một chuỗi bí mật an toàn.');
+    }
     await sequelize.authenticate();
     await sequelize.sync();
     app.listen(port, () => console.log(`API running at http://localhost:${port}`));
@@ -16,4 +19,3 @@ async function start() {
 }
 
 start();
-

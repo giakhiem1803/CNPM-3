@@ -23,13 +23,17 @@
 
 ## Cài đặt
 
-1. Tạo database:
+1. Tạo database và cấu trúc bảng bằng file `database/schema.sql` trong MySQL Workbench hoặc MySQL CLI.
+
+Nếu chỉ cần tạo database trước khi chạy Sequelize:
 
 ```sql
 CREATE DATABASE digital_learning_resources CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 2. Sao chép `backend/.env.example` thành `backend/.env`, sau đó sửa thông tin MySQL và `JWT_SECRET`.
+
+`JWT_SECRET` bắt buộc phải là chuỗi bí mật dài do bạn tự tạo. Backend sẽ từ chối khởi động nếu biến này bị thiếu hoặc vẫn dùng giá trị mẫu.
 
 3. Sao chép `frontend/.env.example` thành `frontend/.env` nếu API không chạy ở cổng 5000.
 
@@ -88,8 +92,10 @@ npm run build
 - `docs/report-outline.md`: khung nội dung báo cáo.
 - `docs/product-backlog.md`: Product Backlog và Sprint đầu tiên.
 - `docs/api-documentation.md`: danh sách API.
-- `docs/test-cases.md`: 20 kịch bản kiểm thử.
+- `docs/test-cases.md`: 25 kịch bản kiểm thử.
 - `docs/diagrams/system-design.md`: kiến trúc, ERD và sequence diagram.
+- `docs/postman/KhIm_Hub_API_Export.postman_collection.json`: Postman Collection chuẩn để kiểm thử API.
+- `docs/postman/KhIm_Hub_Local_Export.postman_environment.json`: Environment cục bộ, không chứa JWT đã đăng nhập.
 
 ## Giới hạn
 

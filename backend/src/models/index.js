@@ -68,27 +68,27 @@ export const ActivityLog = sequelize.define('ActivityLog', {
   details: DataTypes.TEXT
 }, { tableName: 'activity_logs', updatedAt: false });
 
-Role.hasMany(User, { foreignKey: { name: 'roleId', allowNull: false } });
-User.belongsTo(Role, { foreignKey: 'roleId' });
-User.hasMany(LearningResource, { as: 'uploadedResources', foreignKey: { name: 'uploaderId', allowNull: false } });
-LearningResource.belongsTo(User, { as: 'uploader', foreignKey: 'uploaderId' });
-Subject.hasMany(LearningResource, { foreignKey: { name: 'subjectId', allowNull: false } });
-LearningResource.belongsTo(Subject, { foreignKey: 'subjectId' });
-Category.hasMany(LearningResource, { foreignKey: { name: 'categoryId', allowNull: false } });
-LearningResource.belongsTo(Category, { foreignKey: 'categoryId' });
+Role.hasMany(User, { foreignKey: { name: 'roleId', allowNull: false }, onDelete: 'RESTRICT' });
+User.belongsTo(Role, { foreignKey: 'roleId', onDelete: 'RESTRICT' });
+User.hasMany(LearningResource, { as: 'uploadedResources', foreignKey: { name: 'uploaderId', allowNull: false }, onDelete: 'RESTRICT' });
+LearningResource.belongsTo(User, { as: 'uploader', foreignKey: 'uploaderId', onDelete: 'RESTRICT' });
+Subject.hasMany(LearningResource, { foreignKey: { name: 'subjectId', allowNull: false }, onDelete: 'RESTRICT' });
+LearningResource.belongsTo(Subject, { foreignKey: 'subjectId', onDelete: 'RESTRICT' });
+Category.hasMany(LearningResource, { foreignKey: { name: 'categoryId', allowNull: false }, onDelete: 'RESTRICT' });
+LearningResource.belongsTo(Category, { foreignKey: 'categoryId', onDelete: 'RESTRICT' });
 LearningResource.hasOne(ResourceFile, { as: 'file', foreignKey: { name: 'resourceId', allowNull: false }, onDelete: 'CASCADE' });
 ResourceFile.belongsTo(LearningResource, { foreignKey: 'resourceId' });
 User.belongsToMany(LearningResource, { through: Favorite, as: 'favoriteResources', foreignKey: 'userId', otherKey: 'resourceId' });
 LearningResource.belongsToMany(User, { through: Favorite, as: 'favoritedBy', foreignKey: 'resourceId', otherKey: 'userId' });
-User.hasMany(DownloadHistory, { foreignKey: { name: 'userId', allowNull: false } });
-LearningResource.hasMany(DownloadHistory, { foreignKey: { name: 'resourceId', allowNull: false } });
-DownloadHistory.belongsTo(User, { foreignKey: 'userId' });
-DownloadHistory.belongsTo(LearningResource, { foreignKey: 'resourceId' });
-LearningResource.hasMany(Approval, { foreignKey: { name: 'resourceId', allowNull: false } });
-Approval.belongsTo(LearningResource, { foreignKey: 'resourceId' });
-User.hasMany(Approval, { as: 'approvalActions', foreignKey: { name: 'adminId', allowNull: false } });
-Approval.belongsTo(User, { as: 'admin', foreignKey: 'adminId' });
-User.hasMany(ActivityLog, { foreignKey: 'userId' });
-ActivityLog.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(DownloadHistory, { foreignKey: { name: 'userId', allowNull: false }, onDelete: 'CASCADE' });
+LearningResource.hasMany(DownloadHistory, { foreignKey: { name: 'resourceId', allowNull: false }, onDelete: 'CASCADE' });
+DownloadHistory.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+DownloadHistory.belongsTo(LearningResource, { foreignKey: 'resourceId', onDelete: 'CASCADE' });
+LearningResource.hasMany(Approval, { foreignKey: { name: 'resourceId', allowNull: false }, onDelete: 'CASCADE' });
+Approval.belongsTo(LearningResource, { foreignKey: 'resourceId', onDelete: 'CASCADE' });
+User.hasMany(Approval, { as: 'approvalActions', foreignKey: { name: 'adminId', allowNull: false }, onDelete: 'RESTRICT' });
+Approval.belongsTo(User, { as: 'admin', foreignKey: 'adminId', onDelete: 'RESTRICT' });
+User.hasMany(ActivityLog, { foreignKey: { name: 'userId', allowNull: true }, onDelete: 'SET NULL' });
+ActivityLog.belongsTo(User, { foreignKey: 'userId', onDelete: 'SET NULL' });
 
 export { sequelize };

@@ -24,7 +24,8 @@ router.post('/login', [body('email').isEmail().withMessage('Email không hợp l
   const user = await User.findOne({ where: { email: req.body.email.toLowerCase() }, include: Role });
   if (!user || !(await bcrypt.compare(req.body.password, user.passwordHash))) return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng.' });
   if (user.status === 'LOCKED') return res.status(403).json({ message: 'Tài khoản đã bị khóa.' });
-  const token = jwt.sign({ id: user.id, role: user.Role.name }, process.env.JWT_SECRET || 'development-secret-change-me', { expiresIn: '8h' });
+  if (!process.env.JWT_SECRET) return res.status(500).json({ message: 'Máy chủ chưa được cấu hình JWT_SECRET.' });
+  const token = jwt.sign({ id: user.id, role: user.Role.name }, process.env.JWT_SECRET, { expiresIn: '8h' });
   await logActivity(user.id, 'LOGIN', 'Đăng nhập thành công');
   res.json({ token, user: publicUser(user) });
 }));

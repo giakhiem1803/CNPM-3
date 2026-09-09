@@ -2,6 +2,8 @@
 
 Base URL: `http://localhost:5000/api`. API riêng tư dùng header `Authorization: Bearer <token>`.
 
+Backend yêu cầu biến môi trường `JWT_SECRET` có giá trị riêng và sẽ không khởi động nếu vẫn dùng giá trị mẫu. Các API trả thông tin file chỉ công khai tên gốc, MIME type, phần mở rộng và dung lượng; đường dẫn lưu nội bộ và tên file vật lý không được đưa vào response.
+
 | Method | Endpoint | Quyền | Mục đích |
 |---|---|---|---|
 | POST | `/auth/register` | Công khai | Đăng ký sinh viên |
@@ -31,3 +33,5 @@ Base URL: `http://localhost:5000/api`. API riêng tư dùng header `Authorizatio
 | GET | `/admin/activities` | ADMIN | 20 hoạt động gần nhất |
 
 `GET /resources` hỗ trợ các query: `search`, `subjectId`, `categoryId`, `fileType`, `sort`, `page`, `limit`. Giá trị `sort` gồm `newest`, `oldest`, `popular`.
+
+Chỉ học liệu ở trạng thái `PENDING` mới được duyệt hoặc từ chối. Yêu cầu xử lý lại học liệu đã được duyệt/từ chối trả HTTP `409`. Upload kiểm tra trường bắt buộc, môn học, danh mục, quyền truy cập, phần mở rộng và dung lượng file. Các thao tác ghi học liệu và file được thực hiện trong transaction.
