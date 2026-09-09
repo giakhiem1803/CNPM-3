@@ -11,10 +11,73 @@ flowchart LR
   E --> F[("uploads/")]
 ```
 
-## ERD rút gọn
+## ERD đầy đủ
 
 ```mermaid
 erDiagram
+  ROLES {
+    int id PK
+    enum name UK
+  }
+  USERS {
+    int id PK
+    string full_name
+    string email UK
+    string password_hash
+    enum status
+    int role_id FK
+  }
+  SUBJECTS {
+    int id PK
+    string name UK
+  }
+  CATEGORIES {
+    int id PK
+    string name UK
+  }
+  LEARNING_RESOURCES {
+    int id PK
+    string title
+    enum access_level
+    enum status
+    int download_count
+    int uploader_id FK
+    int subject_id FK
+    int category_id FK
+  }
+  RESOURCE_FILES {
+    int id PK
+    string original_name
+    string stored_name
+    string path
+    string extension
+    bigint size
+    int resource_id FK
+  }
+  FAVORITES {
+    int id PK
+    int user_id FK
+    int resource_id FK
+  }
+  DOWNLOAD_HISTORIES {
+    int id PK
+    datetime downloaded_at
+    int user_id FK
+    int resource_id FK
+  }
+  APPROVALS {
+    int id PK
+    enum action
+    string reason
+    int resource_id FK
+    int admin_id FK
+  }
+  ACTIVITY_LOGS {
+    int id PK
+    string action
+    text details
+    int user_id FK
+  }
   ROLES ||--o{ USERS : grants
   USERS ||--o{ LEARNING_RESOURCES : uploads
   SUBJECTS ||--o{ LEARNING_RESOURCES : classifies
@@ -26,6 +89,7 @@ erDiagram
   LEARNING_RESOURCES ||--o{ DOWNLOAD_HISTORIES : records
   USERS ||--o{ APPROVALS : performs
   LEARNING_RESOURCES ||--o{ APPROVALS : receives
+  USERS ||--o{ ACTIVITY_LOGS : generates
 ```
 
 ## Trình tự upload và duyệt

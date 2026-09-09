@@ -5,6 +5,31 @@
     "description": "Collection demo cho đồ án KhIm Hub. Chọn Environment KhIm Hub Local trước khi gửi request.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const expected = {",
+          "  'API health': 200, 'Login - Lecturer': 200, 'Login - Admin': 200, 'Login - Student': 200,",
+          "  'Get my profile': 200, 'Update my profile': 200, 'Get subjects': 200, 'Get categories': 200,",
+          "  'Create subject (Admin)': 201, 'Update subject (Admin)': 200, 'Delete subject (Admin)': 200,",
+          "  'Create category (Admin)': 201, 'Update category (Admin)': 200, 'Delete category (Admin)': 200,",
+          "  'Search, filter and paginate': 200, 'Get resource detail': 200, 'My resources (Lecturer)': 200,",
+          "  'Upload resource (Lecturer)': 201, 'Update resource (Lecturer)': 200, 'Preview PDF': 200,",
+          "  'Download resource': 200, 'Delete resource (Owner/Admin)': 200, 'Get favorites': 200,",
+          "  'Add favorite': 201, 'Delete favorite': 200, 'Download history': 200, 'Dashboard statistics': 200,",
+          "  'Pending approvals': 200, 'Approve resource': 200, 'Reject resource': 200, 'Get users': 200,",
+          "  'Lock or unlock user': 200, 'Change user role': 200, 'Recent activities': 200",
+          "};",
+          "const status = expected[pm.info.requestName];",
+          "if (status) pm.test(`${pm.info.requestName}: HTTP ${status}`, () => pm.response.to.have.status(status));",
+          "pm.test('Phản hồi dưới 3 giây', () => pm.expect(pm.response.responseTime).to.be.below(3000));"
+        ]
+      }
+    }
+  ],
   "variable": [
     { "key": "resourceId", "value": "1" },
     { "key": "pendingResourceId", "value": "1" },
@@ -68,7 +93,7 @@
         { "name": "My resources (Lecturer)", "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer {{lecturerToken}}"}],"url":"{{baseUrl}}/resources/my-resources"}, "response": [] },
         {
           "name": "Upload resource (Lecturer)",
-          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Upload tạo trạng thái chờ duyệt', function () { pm.response.to.have.status(201); });", "pm.collectionVariables.set('pendingResourceId', pm.response.json().item.id);"] } }],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Upload tạo trạng thái chờ duyệt', function () { pm.response.to.have.status(201); });", "const id = pm.response.json().item.id;", "pm.collectionVariables.set('pendingResourceId', id);", "pm.collectionVariables.set('resourceId', id);", "pm.collectionVariables.set('favoriteResourceId', id);"] } }],
           "request": { "method":"POST", "header":[{"key":"Authorization","value":"Bearer {{lecturerToken}}"}], "body": {"mode":"formdata","formdata":[{"key":"title","value":"Tài liệu demo Postman","type":"text"},{"key":"description","value":"Học liệu minh chứng thao tác upload qua Postman.","type":"text"},{"key":"subjectId","value":"1","type":"text"},{"key":"categoryId","value":"1","type":"text"},{"key":"keywords","value":"postman, demo, khim hub","type":"text"},{"key":"accessLevel","value":"AUTHENTICATED","type":"text"},{"key":"file","type":"file","src":""}]}, "url":"{{baseUrl}}/resources" },
           "response": []
         },
@@ -95,7 +120,7 @@
         { "name":"Approve resource", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/admin/approvals/{{pendingResourceId}}/approve"},"response":[] },
         { "name":"Reject resource", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Thiếu mô tả hoặc thông tin học liệu chưa đầy đủ.\"\n}"},"url":"{{baseUrl}}/admin/approvals/{{pendingResourceId}}/reject"},"response":[] },
         { "name":"Get users", "request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/admin/users"},"response":[] },
-        { "name":"Lock or unlock user", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"LOCKED\"\n}"},"url":"{{baseUrl}}/admin/users/{{userId}}/status"},"response":[] },
+        { "name":"Lock or unlock user", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"ACTIVE\"\n}"},"url":"{{baseUrl}}/admin/users/{{userId}}/status"},"response":[] },
         { "name":"Change user role", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"role\": \"LECTURER\"\n}"},"url":"{{baseUrl}}/admin/users/{{userId}}/role"},"response":[] },
         { "name":"Recent activities", "request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/admin/activities"},"response":[] }
       ]

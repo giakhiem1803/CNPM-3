@@ -1,6 +1,14 @@
-# Digital Learning Resources — Kho học liệu số
+# CNPM 3 — KhIm Hub
+
+## Hệ thống Quản lý và Chia sẻ Học liệu số
 
 Đồ án cá nhân môn Chuyên đề Công nghệ phần mềm 3, sử dụng Node.js, Express, React, RESTful API và MySQL.
+
+| Thông tin | Nội dung |
+|---|---|
+| Sinh viên thực hiện | Đinh Gia Khiêm |
+| Mã số sinh viên | 2200011704 |
+| Repository | https://github.com/giakhiem1803/CNPM-3 |
 
 ## Chức năng
 
@@ -91,6 +99,7 @@ npm run build
 
 - `docs/report-outline.md`: khung nội dung báo cáo.
 - `docs/product-backlog.md`: Product Backlog và Sprint đầu tiên.
+- `docs/project-proposal.md`: đề cương, phạm vi và kế hoạch thực hiện đồ án.
 - `docs/api-documentation.md`: danh sách API.
 - `docs/test-cases.md`: 25 kịch bản kiểm thử.
 - `docs/diagrams/system-design.md`: kiến trúc, ERD và sequence diagram.
