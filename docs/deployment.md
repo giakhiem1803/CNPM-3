@@ -10,6 +10,7 @@ Source đã có cấu hình production và Docker. URL công khai chỉ được
 - Backend Node.js: Render hoặc Railway, đặt Root Directory là `backend`.
 - AI service FastAPI: Render hoặc Railway, đặt Root Directory là `ai-service`.
 - Database: MySQL được quản lý, tương thích kết nối từ Sequelize/mysql2.
+- Database trên Render: PostgreSQL qua `DATABASE_URL`; local vẫn dùng MySQL qua các biến `DB_*`.
 - File học liệu: gắn persistent volume hoặc chuyển sang object storage trước khi dùng production.
 
 ## Biến môi trường
@@ -24,6 +25,7 @@ VITE_API_URL=https://BACKEND_DOMAIN/api
 
 ```env
 PORT=5000
+DATABASE_URL=
 DB_HOST=
 DB_PORT=3306
 DB_NAME=digital_learning_resources
