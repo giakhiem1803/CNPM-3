@@ -7,6 +7,7 @@ import catalogRoutes from './routes/catalog.routes.js';
 import resourceRoutes from './routes/resource.routes.js';
 import userRoutes from './routes/user.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { errorHandler, notFound } from './middlewares/errors.js';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api', catalogRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 app.use(notFound);
 app.use(errorHandler);
 export default app;

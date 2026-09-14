@@ -21,7 +21,8 @@
           "  'Download resource': 200, 'Delete resource (Owner/Admin)': 200, 'Get favorites': 200,",
           "  'Add favorite': 201, 'Delete favorite': 200, 'Download history': 200, 'Dashboard statistics': 200,",
           "  'Pending approvals': 200, 'Approve resource': 200, 'Reject resource': 200, 'Get users': 200,",
-          "  'Lock or unlock user': 200, 'Change user role': 200, 'Recent activities': 200",
+          "  'Lock or unlock user': 200, 'Change user role': 200, 'Recent activities': 200,",
+          "  'AI summarize (Lecturer)': 200, 'AI keywords (Lecturer)': 200",
           "};",
           "const status = expected[pm.info.requestName];",
           "if (status) pm.test(`${pm.info.requestName}: HTTP ${status}`, () => pm.response.to.have.status(status));",
@@ -123,6 +124,13 @@
         { "name":"Lock or unlock user", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"ACTIVE\"\n}"},"url":"{{baseUrl}}/admin/users/{{userId}}/status"},"response":[] },
         { "name":"Change user role", "request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"role\": \"LECTURER\"\n}"},"url":"{{baseUrl}}/admin/users/{{userId}}/role"},"response":[] },
         { "name":"Recent activities", "request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{adminToken}}"}],"url":"{{baseUrl}}/admin/activities"},"response":[] }
+      ]
+    },
+    {
+      "name": "07. AI Authoring",
+      "item": [
+        { "name":"AI summarize (Lecturer)", "request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{lecturerToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"text\": \"Tài liệu hướng dẫn xây dựng RESTful API với Node.js, Express, React và MySQL dành cho sinh viên Công nghệ phần mềm.\"\n}"},"url":"{{baseUrl}}/ai/summarize"},"response":[] },
+        { "name":"AI keywords (Lecturer)", "request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{lecturerToken}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"text\": \"Tài liệu hướng dẫn xây dựng RESTful API với Node.js, Express, React và MySQL dành cho sinh viên Công nghệ phần mềm.\"\n}"},"url":"{{baseUrl}}/ai/keywords"},"response":[] }
       ]
     }
   ]

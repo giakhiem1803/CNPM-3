@@ -21,6 +21,8 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 - Áp dụng xác thực JWT và phân quyền theo ba vai trò.
 - Ghi nhận lịch sử tải, lượt tải, yêu thích và hoạt động quản trị.
 - Cung cấp source code, schema, Postman Collection và bộ test có thể kiểm tra lại.
+- Tích hợp dịch vụ Python FastAPI để Lecturer/Admin nhận gợi ý mô tả và từ khóa từ OpenAI mà không làm lộ API key ở frontend.
+- Cung cấp khả năng cài đặt giao diện theo mô hình Progressive Web App (PWA).
 
 ## 4. Phạm vi
 
@@ -41,6 +43,7 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 - Streaming video và watermark.
 - Lưu file trên AWS S3 hoặc Cloudinary.
 - Thông báo thời gian thực và ứng dụng di động riêng.
+- Ứng dụng native Android/iOS; phiên bản hiện tại chỉ hỗ trợ PWA.
 
 ## 5. Đối tượng sử dụng
 
@@ -61,10 +64,12 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 | Upload | Multer, lưu file cục bộ |
 | Kiểm thử | Jest, Supertest, Postman |
 | Quản lý phiên bản | Git và GitHub |
+| AI | Python, FastAPI, OpenAI Responses API |
+| Hybrid | Progressive Web App, Web App Manifest, Service Worker |
 
 ## 7. Kiến trúc đề xuất
 
-Người dùng thao tác trên giao diện React. Frontend gửi HTTP request đến Express API bằng Axios. Backend xác thực JWT, xử lý nghiệp vụ, sử dụng Sequelize để truy cập MySQL và lưu file học liệu trong thư mục upload cục bộ. Những file được tải hoặc xem trước chỉ được phục vụ thông qua API có kiểm tra quyền.
+Người dùng thao tác trên giao diện React. Frontend gửi HTTP request đến Express API bằng Axios. Backend xác thực JWT, xử lý nghiệp vụ, sử dụng Sequelize để truy cập MySQL và lưu file học liệu trong thư mục upload cục bộ. Với chức năng gợi ý metadata, Express chuyển văn bản sang FastAPI; chỉ FastAPI giữ khóa và gọi OpenAI. Những file được tải hoặc xem trước chỉ được phục vụ thông qua API có kiểm tra quyền.
 
 ## 8. Yêu cầu phi chức năng
 

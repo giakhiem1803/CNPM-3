@@ -7,6 +7,10 @@ backend/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
 frontend/dist/
+ai-service/.venv/
+ai-service/.env
+__pycache__/
+.pytest_cache/
 coverage/
 *.log
 tmp/

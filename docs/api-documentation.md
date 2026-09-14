@@ -31,7 +31,11 @@ Backend yêu cầu biến môi trường `JWT_SECRET` có giá trị riêng và 
 | PUT | `/admin/approvals/:id/reject` | ADMIN | Từ chối kèm lý do |
 | GET | `/admin/statistics` | ADMIN | Thống kê tổng quan |
 | GET | `/admin/activities` | ADMIN | 20 hoạt động gần nhất |
+| POST | `/ai/summarize` | LECTURER, ADMIN | Gợi ý mô tả từ văn bản đã nhập |
+| POST | `/ai/keywords` | LECTURER, ADMIN | Gợi ý 4-8 từ khóa từ văn bản đã nhập |
 
 `GET /resources` hỗ trợ các query: `search`, `subjectId`, `categoryId`, `fileType`, `sort`, `page`, `limit`. Giá trị `sort` gồm `newest`, `oldest`, `popular`.
+
+Hai endpoint AI nhận JSON `{ "text": "..." }` dài từ 20 đến 12.000 ký tự. Express không giữ API key OpenAI và không cho STUDENT sử dụng công cụ soạn metadata. Dịch vụ Python cung cấp `GET /health`, `POST /summarize` và `POST /keywords`.
 
 Chỉ học liệu ở trạng thái `PENDING` mới được duyệt hoặc từ chối. Yêu cầu xử lý lại học liệu đã được duyệt/từ chối trả HTTP `409`. Upload kiểm tra trường bắt buộc, môn học, danh mục, quyền truy cập, phần mở rộng và dung lượng file. Các thao tác ghi học liệu và file được thực hiện trong transaction.

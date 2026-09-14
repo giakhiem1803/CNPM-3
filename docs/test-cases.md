@@ -29,3 +29,8 @@ Môi trường đề xuất: Chrome mới nhất, Node.js LTS, MySQL 8, Postman.
 | TC23 | Preview | Mở PDF đã duyệt | Hiển thị trong tab mới | Pass phần API - Jest/Supertest |
 | TC24 | Quản trị | Admin tự khóa chính mình | HTTP 400 | Pass - Jest/Supertest |
 | TC25 | Danh mục | Xóa dữ liệu đang được sử dụng | HTTP 409 và thông báo rõ ràng | Pass - Jest/Supertest (mock database) |
+| TC26 | AI | LECTURER yêu cầu gợi ý từ khóa | Express gọi AI service và trả danh sách | Pass - Jest/Supertest (mock AI service) |
+| TC27 | Phân quyền AI | STUDENT gọi API AI | HTTP 403 | Pass - Jest/Supertest |
+| TC28 | Dữ liệu AI | Văn bản dưới 20 ký tự | HTTP 400, không gọi AI service | Pass - Jest/Supertest |
+| TC29 | Python AI service | Không có OPENAI_API_KEY | Health vẫn hoạt động; tác vụ AI trả HTTP 503 | Kiểm thử bằng pytest |
+| TC30 | PWA | Production build chứa manifest, service worker và offline page | Các file tồn tại; service worker không cache API/JWT | Kiểm tra production build |

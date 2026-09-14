@@ -2,7 +2,7 @@
 
 ## Hệ thống Quản lý và Chia sẻ Học liệu số
 
-Đồ án cá nhân môn Chuyên đề Công nghệ phần mềm 3, sử dụng Node.js, Express, React, RESTful API và MySQL.
+Đồ án cá nhân môn Chuyên đề Công nghệ phần mềm 3, sử dụng Node.js, Express, React, RESTful API, MySQL và dịch vụ Python hỗ trợ OpenAI.
 
 | Thông tin | Nội dung |
 |---|---|
@@ -22,12 +22,15 @@
 - Phân trang, lọc định dạng và sắp xếp học liệu.
 - Chỉnh sửa/xóa tài liệu, preview PDF có kiểm tra quyền.
 - Nhật ký hoạt động và dashboard quản trị mở rộng.
+- Lecturer/Admin có thể dùng OpenAI để gợi ý mô tả và từ khóa; API key chỉ nằm ở AI service.
+- Frontend có manifest, service worker và trang offline để cài đặt theo mô hình PWA.
 
 ## Yêu cầu
 
 - Node.js LTS (khuyến nghị 20+).
 - MySQL 8+.
 - npm.
+- Python 3.12+ nếu chạy AI service.
 
 ## Cài đặt
 
@@ -68,6 +71,18 @@ npm run dev
 - API: http://localhost:5000/api
 - Health check: http://localhost:5000/api/health
 
+7. Tùy chọn - chạy AI service:
+
+```bash
+cd ai-service
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+copy .env.example .env
+.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000
+```
+
+AI là phần mở rộng tùy chọn. Bản nộp mặc định đặt `AI_ENABLED=false`, vì vậy không gọi OpenAI và không phát sinh phí. Khi cần trình diễn thật, điền `OPENAI_API_KEY` và đổi `AI_ENABLED=true`; KhIm Hub vẫn hoạt động bình thường khi AI tắt.
+
 ## Tài khoản demo
 
 | Vai trò | Email | Mật khẩu |
@@ -95,6 +110,12 @@ npm test
 npm run build
 ```
 
+Kiểm thử AI service:
+
+```bash
+ai-service\.venv\Scripts\python -m pytest ai-service\tests
+```
+
 ## Tài liệu kèm theo
 
 - `docs/report-outline.md`: khung nội dung báo cáo.
@@ -105,7 +126,9 @@ npm run build
 - `docs/diagrams/system-design.md`: kiến trúc, ERD và sequence diagram.
 - `docs/postman/KhIm_Hub_API_Export.postman_collection.json`: Postman Collection chuẩn để kiểm thử API.
 - `docs/postman/KhIm_Hub_Local_Export.postman_environment.json`: Environment cục bộ, không chứa JWT đã đăng nhập.
+- `docs/deployment.md`: cấu hình Docker và hướng dẫn triển khai production.
+- `docs/mendix-task-app.md`: đặc tả bài thực hành Mendix độc lập.
 
 ## Giới hạn
 
-Phiên bản MVP lưu file cục bộ và chưa có OCR, AI gợi ý, streaming, watermark hoặc thông báo thời gian thực. Đây là các hướng phát triển, không phải chức năng đã hoàn thành.
+Phiên bản mở rộng đã có mã nguồn cho luồng AI gợi ý metadata và PWA. Bản nộp hiện để AI ở trạng thái tùy chọn, mặc định tắt do tài khoản API chưa có hạn mức; không mô tả đây là kết quả AI đã vận hành thực tế. Hệ thống vẫn chưa có OCR, streaming, watermark hoặc thông báo thời gian thực. File production cần persistent volume hoặc object storage.

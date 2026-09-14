@@ -9,7 +9,11 @@ flowchart LR
   E --> S["Sequelize"]
   S --> M[("MySQL")]
   E --> F[("uploads/")]
+  E --> A["Python FastAPI AI Service"]
+  A --> O["OpenAI Responses API"]
 ```
+
+Frontend không nhận `OPENAI_API_KEY`. Người dùng có vai trò Lecturer/Admin gửi phần văn bản đã nhập đến Express; Express kiểm tra JWT và chuyển yêu cầu nội bộ sang FastAPI. FastAPI mới gọi OpenAI. Khi chưa có API key, AI service vẫn trả health check nhưng endpoint AI trả trạng thái chưa cấu hình.
 
 ## ERD đầy đủ
 

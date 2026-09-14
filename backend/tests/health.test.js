@@ -265,4 +265,34 @@ describe('API smoke and security checks', () => {
     expect(response.body.user).not.toHaveProperty('passwordHash');
     expect(response.body.user.status).toBe('LOCKED');
   });
+
+  it('allows a lecturer to request AI keywords through the internal service', async () => {
+    process.env.JWT_SECRET = secret;
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 2, status: 'ACTIVE', Role: { name: 'LECTURER' } });
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ keywords: ['Node.js', 'React'] })
+    });
+    const token = jwt.sign({ id: 2, role: 'LECTURER' }, secret);
+    const response = await request(app).post('/api/ai/keywords').set('Authorization', `Bearer ${token}`).send({ text: 'Tài liệu xây dựng REST API bằng Node.js và React.' });
+    expect(response.status).toBe(200);
+    expect(response.body.keywords).toEqual(['Node.js', 'React']);
+  });
+
+  it('denies a student access to AI authoring tools', async () => {
+    process.env.JWT_SECRET = secret;
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 3, status: 'ACTIVE', Role: { name: 'STUDENT' } });
+    const token = jwt.sign({ id: 3, role: 'STUDENT' }, secret);
+    const response = await request(app).post('/api/ai/summarize').set('Authorization', `Bearer ${token}`).send({ text: 'Nội dung học liệu đủ dài để thực hiện kiểm thử.' });
+    expect(response.status).toBe(403);
+  });
+
+  it('validates AI input length before calling the internal service', async () => {
+    process.env.JWT_SECRET = secret;
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 2, status: 'ACTIVE', Role: { name: 'LECTURER' } });
+    const token = jwt.sign({ id: 2, role: 'LECTURER' }, secret);
+    const response = await request(app).post('/api/ai/summarize').set('Authorization', `Bearer ${token}`).send({ text: 'quá ngắn' });
+    expect(response.status).toBe(400);
+  });
 });
