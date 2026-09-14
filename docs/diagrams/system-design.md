@@ -7,8 +7,9 @@ flowchart LR
   U["Người dùng"] --> R["React + Vite"]
   R -->|"REST/JSON + JWT"| E["Node.js + Express"]
   E --> S["Sequelize"]
-  S --> M[("MySQL")]
-  E --> F[("uploads/")]
+  S --> M[("MySQL local")]
+  S --> P[("PostgreSQL production trên Render")]
+  E --> F[("File nhị phân trong database")]
   E --> A["Python FastAPI AI Service"]
   A --> O["OpenAI Responses API"]
 ```
@@ -103,7 +104,7 @@ sequenceDiagram
   actor L as Giảng viên
   participant W as React
   participant A as Express API
-  participant D as MySQL
+  participant D as Database qua Sequelize
   actor X as Quản trị viên
   L->>W: Chọn file và nhập metadata
   W->>A: POST /resources + JWT

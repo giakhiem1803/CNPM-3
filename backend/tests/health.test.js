@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { jest } from '@jest/globals';
 import app from '../src/app.js';
-import { ActivityLog, Category, Favorite, LearningResource, ResourceFile, Role, Subject, User, sequelize } from '../src/models/index.js';
+import { ActivityLog, Category, DownloadHistory, Favorite, LearningResource, ResourceFile, Role, Subject, User, sequelize } from '../src/models/index.js';
 
 const secret = 'test-secret-at-least-for-smoke-tests';
 let filesToCleanup = [];
@@ -128,7 +128,7 @@ describe('API smoke and security checks', () => {
     const transaction = { commit: jest.fn(), rollback: jest.fn() };
     jest.spyOn(sequelize, 'transaction').mockResolvedValue(transaction);
     jest.spyOn(LearningResource, 'create').mockResolvedValue({ id: 101, status: 'PENDING' });
-    jest.spyOn(ResourceFile, 'create').mockImplementation(async (data) => { filesToCleanup.push(data.path); return data; });
+    const createFile = jest.spyOn(ResourceFile, 'create').mockImplementation(async (data) => data);
     jest.spyOn(LearningResource, 'findByPk').mockResolvedValue({ id: 101, title: 'PDF kiểm thử', status: 'PENDING', file: { originalName: 'test.pdf', extension: '.pdf', size: 8 } });
     jest.spyOn(ActivityLog, 'create').mockResolvedValue({});
     const token = jwt.sign({ id: 2, role: 'LECTURER' }, secret);
@@ -137,6 +137,8 @@ describe('API smoke and security checks', () => {
       .attach('file', Buffer.from('%PDF-1.4'), 'test.pdf');
     expect(response.status).toBe(201);
     expect(response.body.item.status).toBe('PENDING');
+    expect(createFile.mock.calls[0][0]).toMatchObject({ path: null, originalName: 'test.pdf' });
+    expect(Buffer.isBuffer(createFile.mock.calls[0][0].data)).toBe(true);
     expect(transaction.commit).toHaveBeenCalled();
     expect(transaction.rollback).not.toHaveBeenCalled();
   });
@@ -226,6 +228,56 @@ describe('API smoke and security checks', () => {
     const response = await request(app).get('/api/resources/10/preview').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toContain('application/pdf');
+  });
+
+  it('previews an approved PDF stored in the database', async () => {
+    process.env.JWT_SECRET = secret;
+    const contents = Buffer.from('%PDF-1.4 database-backed');
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 3, status: 'ACTIVE', Role: { name: 'STUDENT' } });
+    jest.spyOn(LearningResource, 'findOne').mockResolvedValue({
+      id: 10,
+      status: 'APPROVED',
+      accessLevel: 'AUTHENTICATED',
+      file: { extension: '.pdf', originalName: 'database.pdf', mimeType: 'application/pdf', data: contents, path: null }
+    });
+    const token = jwt.sign({ id: 3, role: 'STUDENT' }, secret);
+    const response = await request(app).get('/api/resources/10/preview').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('application/pdf');
+    expect(Buffer.from(response.body)).toEqual(contents);
+  });
+
+  it('downloads a database-backed file and records the download', async () => {
+    process.env.JWT_SECRET = secret;
+    const contents = Buffer.from('database-backed download');
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 3, status: 'ACTIVE', Role: { name: 'STUDENT' } });
+    const resource = {
+      id: 10,
+      status: 'APPROVED',
+      accessLevel: 'AUTHENTICATED',
+      increment: jest.fn(),
+      file: { originalName: 'notes.pdf', mimeType: 'application/octet-stream', data: contents, path: null }
+    };
+    jest.spyOn(LearningResource, 'findOne').mockResolvedValue(resource);
+    jest.spyOn(DownloadHistory, 'create').mockResolvedValue({});
+    const token = jwt.sign({ id: 3, role: 'STUDENT' }, secret);
+    const response = await request(app).get('/api/resources/10/download').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    expect(Buffer.from(response.body)).toEqual(contents);
+    expect(DownloadHistory.create).toHaveBeenCalledWith({ userId: 3, resourceId: 10 });
+    expect(resource.increment).toHaveBeenCalledWith('downloadCount');
+  });
+
+  it('does not expose database file contents in the approval queue', async () => {
+    process.env.JWT_SECRET = secret;
+    jest.spyOn(User, 'findByPk').mockResolvedValue({ id: 1, status: 'ACTIVE', Role: { name: 'ADMIN' } });
+    const findAll = jest.spyOn(LearningResource, 'findAll').mockResolvedValue([]);
+    const token = jwt.sign({ id: 1, role: 'ADMIN' }, secret);
+    const response = await request(app).get('/api/admin/approvals').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(200);
+    const fileInclude = findAll.mock.calls[0][0].include.find((entry) => entry.as === 'file');
+    expect(fileInclude.attributes).not.toContain('data');
+    expect(fileInclude.attributes).not.toContain('path');
   });
 
   it('requires a reason when an admin rejects a resource', async () => {

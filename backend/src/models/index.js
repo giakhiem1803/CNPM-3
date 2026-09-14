@@ -41,7 +41,10 @@ export const ResourceFile = sequelize.define('ResourceFile', {
   id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
   originalName: { type: DataTypes.STRING(255), allowNull: false },
   storedName: { type: DataTypes.STRING(255), allowNull: false },
-  path: { type: DataTypes.STRING(500), allowNull: false },
+  // `path` is retained for backward compatibility with files created before
+  // database-backed storage was introduced.
+  path: { type: DataTypes.STRING(500), allowNull: true },
+  data: { type: DataTypes.BLOB('long'), allowNull: true },
   mimeType: { type: DataTypes.STRING(120), allowNull: false },
   extension: { type: DataTypes.STRING(20), allowNull: false },
   size: { type: DataTypes.BIGINT.UNSIGNED, allowNull: false }

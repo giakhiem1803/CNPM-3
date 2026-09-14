@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { DataTypes } from 'sequelize';
 import { Category, Role, Subject, User } from '../models/index.js';
 
 const roleNames = ['STUDENT', 'LECTURER', 'ADMIN'];
@@ -39,3 +40,19 @@ export async function ensureBaseData() {
   });
 }
 
+export async function ensureFileStorageSchema() {
+  const queryInterface = User.sequelize.getQueryInterface();
+  const columns = await queryInterface.describeTable('resource_files');
+  if (!columns.data) {
+    await queryInterface.addColumn('resource_files', 'data', {
+      type: DataTypes.BLOB('long'),
+      allowNull: true
+    });
+  }
+  if (columns.path?.allowNull === false) {
+    await queryInterface.changeColumn('resource_files', 'path', {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    });
+  }
+}

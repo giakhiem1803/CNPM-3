@@ -41,19 +41,26 @@ router.post('/', authenticate, authorize('LECTURER', 'ADMIN'), upload.single('fi
   const title = clean(req.body.title), description = clean(req.body.description), keywords = clean(req.body.keywords);
   const { subjectId, categoryId } = req.body;
   const accessLevel = req.body.accessLevel || 'AUTHENTICATED';
-  const removeUploadedFile = () => fs.unlink(req.file.path).catch(() => {});
-  if (!title || !description || !subjectId || !categoryId) { await removeUploadedFile(); return res.status(400).json({ message: 'Thiếu tiêu đề, mô tả, môn học hoặc danh mục.' }); }
-  if (!validAccessLevels.has(accessLevel)) { await removeUploadedFile(); return res.status(400).json({ message: 'Quyền truy cập không hợp lệ.' }); }
-  if (!(await validateCatalog(subjectId, categoryId))) { await removeUploadedFile(); return res.status(400).json({ message: 'Môn học hoặc danh mục không tồn tại.' }); }
+  if (!title || !description || !subjectId || !categoryId) return res.status(400).json({ message: 'Thiếu tiêu đề, mô tả, môn học hoặc danh mục.' });
+  if (!validAccessLevels.has(accessLevel)) return res.status(400).json({ message: 'Quyền truy cập không hợp lệ.' });
+  if (!(await validateCatalog(subjectId, categoryId))) return res.status(400).json({ message: 'Môn học hoặc danh mục không tồn tại.' });
   const transaction = await sequelize.transaction();
   let resource;
   try {
     resource = await LearningResource.create({ title, description, subjectId, categoryId, keywords, accessLevel, uploaderId: req.user.id }, { transaction });
-    await ResourceFile.create({ resourceId: resource.id, originalName: req.file.originalname, storedName: req.file.filename, path: req.file.path, mimeType: req.file.mimetype, extension: path.extname(req.file.originalname).toLowerCase(), size: req.file.size }, { transaction });
+    await ResourceFile.create({
+      resourceId: resource.id,
+      originalName: req.file.originalname,
+      storedName: `${Date.now()}-${Math.random().toString(36).slice(2)}${path.extname(req.file.originalname).toLowerCase()}`,
+      path: null,
+      data: req.file.buffer,
+      mimeType: req.file.mimetype,
+      extension: path.extname(req.file.originalname).toLowerCase(),
+      size: req.file.size
+    }, { transaction });
     await transaction.commit();
   } catch (error) {
     await transaction.rollback();
-    await removeUploadedFile();
     throw error;
   }
   await logActivity(req.user.id, 'RESOURCE_UPLOAD', `Học liệu #${resource.id}: ${title}`);
@@ -107,7 +114,9 @@ router.get('/:id/preview', authenticate, asyncHandler(async (req, res) => {
   if (item.file.extension !== '.pdf') return res.status(415).json({ message: 'Chỉ hỗ trợ xem trước tài liệu PDF.' });
   res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(item.file.originalName)}`);
   res.setHeader('Content-Type', 'application/pdf');
-  res.sendFile(path.resolve(item.file.path));
+  if (item.file.data) return res.send(item.file.data);
+  if (item.file.path) return res.sendFile(path.resolve(item.file.path));
+  return res.status(404).json({ message: 'Không tìm thấy dữ liệu file.' });
 }));
 
 router.get('/:id/download', authenticate, asyncHandler(async (req, res) => {
@@ -116,7 +125,13 @@ router.get('/:id/download', authenticate, asyncHandler(async (req, res) => {
   if (item.accessLevel === 'LECTURER_ONLY' && req.user.Role.name === 'STUDENT') return res.status(403).json({ message: 'Tài liệu chỉ dành cho giảng viên.' });
   await DownloadHistory.create({ userId: req.user.id, resourceId: item.id });
   await item.increment('downloadCount');
-  res.download(path.resolve(item.file.path), item.file.originalName);
+  if (item.file.data) {
+    res.setHeader('Content-Type', item.file.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(item.file.originalName)}`);
+    return res.send(item.file.data);
+  }
+  if (item.file.path) return res.download(path.resolve(item.file.path), item.file.originalName);
+  return res.status(404).json({ message: 'Không tìm thấy dữ liệu file.' });
 }));
 
 export default router;
