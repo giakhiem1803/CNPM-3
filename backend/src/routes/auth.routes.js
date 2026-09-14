@@ -14,6 +14,7 @@ const validate = (req, res, next) => { const errors = validationResult(req); ret
 router.post('/register', [body('fullName').trim().isLength({ min: 2 }).withMessage('Họ tên tối thiểu 2 ký tự.'), body('email').isEmail().withMessage('Email không hợp lệ.'), body('password').isLength({ min: 6 }).withMessage('Mật khẩu tối thiểu 6 ký tự.')], validate, asyncHandler(async (req, res) => {
   if (await User.findOne({ where: { email: req.body.email.toLowerCase() } })) return res.status(409).json({ message: 'Email đã được sử dụng.' });
   const role = await Role.findOne({ where: { name: 'STUDENT' } });
+  if (!role) return res.status(503).json({ message: 'Hệ thống chưa khởi tạo vai trò người dùng.' });
   const user = await User.create({ fullName: req.body.fullName, email: req.body.email.toLowerCase(), passwordHash: await bcrypt.hash(req.body.password, 10), roleId: role.id });
   await logActivity(user.id, 'REGISTER', 'Tạo tài khoản mới');
   await user.reload({ include: Role });

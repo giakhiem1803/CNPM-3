@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import app from './src/app.js';
-import { sequelize } from './src/models/index.js';
+import { Role, sequelize } from './src/models/index.js';
 
 const port = Number(process.env.PORT || 5000);
 
@@ -11,6 +11,10 @@ async function start() {
     }
     await sequelize.authenticate();
     await sequelize.sync();
+    await Role.bulkCreate(
+      ['STUDENT', 'LECTURER', 'ADMIN'].map((name) => ({ name })),
+      { ignoreDuplicates: true }
+    );
     app.listen(port, () => console.log(`API running at http://localhost:${port}`));
   } catch (error) {
     console.error('Cannot start server:', error.message);
