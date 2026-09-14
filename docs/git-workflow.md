@@ -19,7 +19,7 @@
 
 - Branch: `feature/production-hardening`
 - Nội dung: lưu file học liệu trong database, bảo vệ dữ liệu file nội bộ, cập nhật tài liệu production và bổ sung kiểm thử.
-- Pull Request: sẽ cập nhật URL sau khi tạo trên GitHub.
+- Pull Request: https://github.com/giakhiem1803/CNPM-3/pull/1
 
 ## Checklist code review
 
