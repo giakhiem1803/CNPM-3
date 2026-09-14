@@ -2,20 +2,22 @@
 
 ## Hệ thống Quản lý và Chia sẻ Học liệu số
 
-Đồ án cá nhân môn Chuyên đề Công nghệ phần mềm 3, sử dụng Node.js, Express, React, RESTful API, MySQL và dịch vụ Python hỗ trợ OpenAI.
+Đồ án cá nhân môn Chuyên đề Công nghệ phần mềm 3, sử dụng Node.js, Express, React, RESTful API, MySQL ở local, PostgreSQL trên production và dịch vụ Python hỗ trợ OpenAI.
 
 | Thông tin | Nội dung |
 |---|---|
 | Sinh viên thực hiện | Đinh Gia Khiêm |
 | Mã số sinh viên | 2200011704 |
 | Repository | https://github.com/giakhiem1803/CNPM-3 |
+| Website production | https://khim-hub-web.onrender.com |
+| Backend health | https://khim-hub-api.onrender.com/api/health |
 
 ## Chức năng
 
 - Ba vai trò STUDENT, LECTURER và ADMIN.
 - Đăng ký, đăng nhập JWT, cập nhật hồ sơ.
 - Tìm kiếm và lọc học liệu đã duyệt.
-- Upload file, theo dõi trạng thái, duyệt hoặc từ chối.
+- Upload file vào database, theo dõi trạng thái, duyệt hoặc từ chối.
 - Tải file có kiểm tra quyền và ghi lịch sử.
 - Yêu thích, quản lý danh mục, người dùng và thống kê.
 - Đăng ký, hồ sơ cá nhân và lịch sử tải xuống.
@@ -110,6 +112,8 @@ npm test
 npm run build
 ```
 
+Kết quả gần nhất: 33/33 test backend đạt. Luồng production từ upload của giảng viên đến admin phê duyệt và hiển thị trên trang chủ đã được kiểm tra ngày 15/09/2026.
+
 Kiểm thử AI service:
 
 ```bash
@@ -131,4 +135,4 @@ ai-service\.venv\Scripts\python -m pytest ai-service\tests
 
 ## Giới hạn
 
-Phiên bản mở rộng đã có mã nguồn cho luồng AI gợi ý metadata và PWA. Bản nộp hiện để AI ở trạng thái tùy chọn, mặc định tắt do tài khoản API chưa có hạn mức; không mô tả đây là kết quả AI đã vận hành thực tế. Hệ thống vẫn chưa có OCR, streaming, watermark hoặc thông báo thời gian thực. File production cần persistent volume hoặc object storage.
+Phiên bản mở rộng đã có mã nguồn cho luồng AI gợi ý metadata và PWA. Bản nộp hiện để AI ở trạng thái tùy chọn, mặc định tắt do tài khoản API chưa có hạn mức; không mô tả đây là kết quả AI đã vận hành thực tế. Hệ thống vẫn chưa có OCR, streaming, watermark hoặc thông báo thời gian thực. File mới được lưu trong database để tồn tại qua các lần khởi động lại của Render. PostgreSQL miễn phí cần được sao lưu hoặc chuyển đổi trước ngày 14/10/2026 nếu muốn duy trì lâu dài.

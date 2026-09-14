@@ -16,7 +16,7 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 
 - Xây dựng RESTful API bằng Node.js và Express.
 - Xây dựng giao diện một trang bằng React và Vite.
-- Lưu trữ dữ liệu có cấu trúc trong MySQL thông qua Sequelize.
+- Lưu trữ dữ liệu có cấu trúc thông qua Sequelize: MySQL khi chạy cục bộ và PostgreSQL trên Render khi triển khai production.
 - Cung cấp quy trình đăng tải, kiểm duyệt và công khai học liệu.
 - Áp dụng xác thực JWT và phân quyền theo ba vai trò.
 - Ghi nhận lịch sử tải, lượt tải, yêu thích và hoạt động quản trị.
@@ -59,7 +59,7 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 |---|---|
 | Frontend | React 19, Vite, React Router, Axios, Bootstrap |
 | Backend | Node.js, Express, RESTful API |
-| Database | MySQL, Sequelize ORM |
+| Database | MySQL (local), PostgreSQL (production), Sequelize ORM |
 | Bảo mật | JWT, bcrypt, Helmet, CORS, rate limiting |
 | Upload | Multer, lưu file cục bộ |
 | Kiểm thử | Jest, Supertest, Postman |
@@ -69,7 +69,7 @@ Học liệu của sinh viên và giảng viên thường được lưu tại nh
 
 ## 7. Kiến trúc đề xuất
 
-Người dùng thao tác trên giao diện React. Frontend gửi HTTP request đến Express API bằng Axios. Backend xác thực JWT, xử lý nghiệp vụ, sử dụng Sequelize để truy cập MySQL và lưu file học liệu trong thư mục upload cục bộ. Với chức năng gợi ý metadata, Express chuyển văn bản sang FastAPI; chỉ FastAPI giữ khóa và gọi OpenAI. Những file được tải hoặc xem trước chỉ được phục vụ thông qua API có kiểm tra quyền.
+Người dùng thao tác trên giao diện React. Frontend gửi HTTP request đến Express API bằng Axios. Backend xác thực JWT, xử lý nghiệp vụ và sử dụng Sequelize để truy cập MySQL ở môi trường local hoặc PostgreSQL trên Render ở môi trường production. File học liệu mới được lưu trong database để tồn tại qua các lần khởi động lại của dịch vụ. Với chức năng gợi ý metadata, Express chuyển văn bản sang FastAPI; chỉ FastAPI giữ khóa và gọi OpenAI. Những file được tải hoặc xem trước chỉ được phục vụ thông qua API có kiểm tra quyền.
 
 ## 8. Yêu cầu phi chức năng
 
@@ -110,3 +110,13 @@ Người dùng thao tác trên giao diện React. Frontend gửi HTTP request đ
 | Bản ghi học liệu và file không đồng bộ | Sử dụng transaction và dọn file khi thao tác thất bại |
 | Xóa dữ liệu đang được sử dụng | Khóa ngoại và phản hồi HTTP 409 |
 | Lộ thông tin nội bộ | Chỉ chọn các trường file an toàn khi trả response |
+
+## 12. Trình bày và tiếp thu phản hồi
+
+Đề cương được chuẩn bị để trình bày theo bốn nội dung: vấn đề cần giải quyết, phạm vi, kiến trúc và luồng nghiệp vụ cốt lõi. Vì đây là đồ án cá nhân, các quyết định kỹ thuật và thay đổi phạm vi được theo dõi qua commit và Pull Request trên GitHub.
+
+Tại thời điểm hoàn thiện source, chưa có biên bản phản hồi chính thức từ giảng viên hoặc lớp. Khi nhận phản hồi, sinh viên sẽ ghi ngày, nội dung góp ý, quyết định tiếp thu hoặc không tiếp thu và thay đổi tương ứng trong bảng dưới đây; không tự tạo phản hồi khi chưa có bằng chứng.
+
+| Ngày | Nguồn phản hồi | Nội dung | Điều chỉnh |
+|---|---|---|---|
+| Chưa cập nhật | Giảng viên/lớp | Chưa có phản hồi chính thức được cung cấp | Bổ sung sau buổi trình bày |

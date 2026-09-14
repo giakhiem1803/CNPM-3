@@ -16,8 +16,8 @@
 | US12 | Là người dùng, tôi muốn giao diện responsive. | Could | Dùng được trên desktop và điện thoại. |
 | US13 | Là giảng viên, tôi muốn AI gợi ý mô tả và từ khóa để nhập metadata nhanh hơn. | Should | Chỉ gửi văn bản được nhập; không lộ API key; báo rõ khi AI chưa cấu hình. |
 | US14 | Là người dùng, tôi muốn cài KhIm Hub như PWA để mở thuận tiện trên thiết bị. | Could | Có manifest, icon và trang offline; không cache dữ liệu riêng tư. |
-| US15 | Là nhóm phát triển, tôi muốn triển khai hệ thống lên máy chủ để truy cập qua Internet. | Must | Frontend, API, AI service và MySQL có URL/cấu hình production được kiểm thử. |
+| US15 | Là nhóm phát triển, tôi muốn triển khai hệ thống lên máy chủ để truy cập qua Internet. | Must | Frontend, API và PostgreSQL có URL/cấu hình production được kiểm thử; AI service được ghi rõ là phần mở rộng tùy chọn. |
 
 Sprint đầu tiên: US01, US02, US03, US04, US06.
 
-Sprint mở rộng: US13, US14, US15. US15 chỉ hoàn thành khi có URL công khai đã kiểm thử.
+Sprint mở rộng: US13, US14, US15. US15 đã hoàn thành với frontend và backend trên Render; AI service vẫn là phần mở rộng tùy chọn, mặc định tắt.

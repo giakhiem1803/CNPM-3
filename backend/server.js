@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import app from './src/app.js';
 import { sequelize } from './src/models/index.js';
-import { ensureBaseData } from './src/config/bootstrap.js';
+import { ensureBaseData, ensureFileStorageSchema } from './src/config/bootstrap.js';
 
 const port = Number(process.env.PORT || 5000);
 
@@ -12,6 +12,7 @@ async function start() {
     }
     await sequelize.authenticate();
     await sequelize.sync();
+    await ensureFileStorageSchema();
     await ensureBaseData();
     app.listen(port, () => console.log(`API running at http://localhost:${port}`));
   } catch (error) {
